@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+    <resources>
+
+    <string name="et_nombre">Name</string>
+
+    <string name="valoracion">Rating</string>
+
+    <string name="URLFoto">Image URL</string>
+
+    <string name="ok">Ok</string>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="anadir_otro">Add one</string>
+
+    <string name="reiniciar_bd">Reset BD</string>
+
+    <string name="aviso">Warning</string>
+
+    <string name="dialog_resetBD">Items will be restored to default</string>
+    <string name="valoracion05">Rating 0 to 5</string>
+    <string name="valoracion50">Rating 5 to 0</string>
+    <string name="cambiarIdioma">Change language</string>
+    <string name="eligeIdioma">Choose language</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="noTienesCuenta">Don\'t have an account yet?</string>
+    <string name="loginFallido">Failed login</string>
+    <string name="debesIntroducirEmail">You must enter an e-mail</string>
+    <string name="debesIntroducirContraseña">You must enter a password</string>
+    <string name="tienesYaCuenta">Already have an account?</string>
+    <string name="registro">Sign Up</string>
+    <string name="yaExisteEmail">This e-mail already exists</string>
+    <string name="guest">Guest</string>
+    <string name="seHaReiniciadoBD">BD has been restored</string>
+
+</resources>

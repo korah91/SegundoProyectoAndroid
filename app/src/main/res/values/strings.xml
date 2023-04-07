@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name" translatable="false">UniStars</string>
+    <string name="et_nombre">Nombre</string>
+    <string name="valoracion">Valoración</string>
+    <string name="URLFoto">URL Foto</string>
+    <string name="ok">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="anadir_otro">Añadir otro</string>
+    <string name="reiniciar_bd">Reiniciar BD</string>
+    <string name="aviso">Aviso</string>
+    <string name="dialog_resetBD">Vas a volver a los valores por defecto</string>
+    <string name="valoracion05">Valoración 0 a 5</string>
+    <string name="valoracion50">Valoración 5 a 0</string>
+    <string name="cambiarIdioma">Cambiar Idioma</string>
+    <string name="eligeIdioma">Elige Idioma</string>
+    <string name="email" translatable="false">E-mail</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="noTienesCuenta">¿No tienes cuenta?</string>
+    <string name="loginFallido">Inicio de sesión fallido</string>
+    <string name="debesIntroducirEmail">Debes introducir un email</string>
+    <string name="debesIntroducirContraseña">Debes introducir una contraseña</string>
+    <string name="tienesYaCuenta">¿Tienes ya cuenta?</string>
+    <string name="registro">Registrarse</string>
+    <string name="yaExisteEmail">Ya existe este e-mail</string>
+    <string name="guest">Invitado</string>
+    <string name="seHaReiniciadoBD">Se ha reiniciado la BD</string>
+</resources>
