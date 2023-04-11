@@ -1,7 +1,13 @@
 package com.example.primerproyecto;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -31,12 +38,6 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Obtenemos el BD Helper
-        DbHelper dbHelper = new DbHelper(this);
-        // Pedimos acceso a la BD
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // Obtenemos el objeto BD para los usuarios
-        DbUsuarios dbUsuarios = new DbUsuarios(this);
 
 
         et_email = findViewById(R.id.et_email);
@@ -69,27 +70,48 @@ public class SignUp extends AppCompatActivity {
                 // Si se han introducido email y contrasena
                 else {
                     // Se comprueba que el email no exista ya
-                    boolean yaExiste = dbUsuarios.existeEmail(email);
+                    Data data = new Data.Builder()
+                            .putString("email", email)
+                            .putString("parametro", "existeEmail")
+                            .putString("password", password).build();
 
-                    // Si el email no esta registrado ya se registra
-                    if (!yaExiste) {
 
-                        dbUsuarios.insertarUsuario(email, password);
-                        // Paso el email
-                        i.putExtra("email", email);
-                        startActivity(i);
-                        // Termino esta actividad
-                        finish();
-                    }
-                    // Si el email ya existe se muestra un mensaje
-                    else {
-                        Toast.makeText(SignUp.this, getString(R.string.yaExisteEmail), Toast.LENGTH_LONG).show();
-                    }
+                    OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(DbUsuarios.class)
+                    .setInputData(data).build();
+                    WorkManager.getInstance(SignUp.this).enqueue(otwr);
+                    WorkManager.getInstance(SignUp.this).getWorkInfoByIdLiveData(otwr.getId()).observe(SignUp.this, new Observer<WorkInfo>() {
+                        @Override
+                        public void onChanged(@Nullable WorkInfo workInfo) {
+                            if (workInfo != null && workInfo.getState().isFinished()) {
+                                String resultado = workInfo.getOutputData().getString("result");
+                                // Si el php devuelve que ya existe el email
+                                Log.d("conexion", "resultado: " + resultado);
+                                if (resultado.equals("Existe")){
+                                    Toast.makeText(SignUp.this, "El usuario ya existe", Toast.LENGTH_LONG).show();
+                                }
+                                // Si el php devuelve que no existe el email se registra
+                                else{
+                                    Data data = new Data.Builder()
+                                    .putString("email", email)
+                                    .putString("parametro", "registro")
+                                    .putString("password", password).build();
+
+                                    OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(DbUsuarios.class)
+                                            .setInputData(data)
+                                            .build();
+                                    WorkManager.getInstance(SignUp.this).enqueue(otwr);
+                                    // Paso el email
+                                    i.putExtra("email", email);
+                                    startActivity(i);
+                                    // Termino esta actividad
+                                    finish();
+                                }
+                            }
+                        }
+                    });
                 }
             }
-
         });
-
 
         // Boton para acceder como Invitado
         btn_guest.setOnClickListener(new View.OnClickListener() {

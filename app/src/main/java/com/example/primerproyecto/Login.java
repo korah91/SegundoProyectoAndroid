@@ -1,7 +1,13 @@
 package com.example.primerproyecto;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,14 +39,6 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Obtenemos el BD Helper
-        DbHelper dbHelper = new DbHelper(Login.this);
-        // Pedimos acceso a la BD
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // Obtenemos el objeto BD para los usuarios
-        DbUsuarios dbUsuarios = new DbUsuarios(this);
-
-
         et_email = findViewById(R.id.et_email);
         et_password = findViewById(R.id.et_password);
         btn_login = findViewById(R.id.btn_login);
@@ -71,23 +69,36 @@ public class Login extends AppCompatActivity {
 
                 // Si se han introducido email y contrasena
                 else {
-                    // Se comprueba que sea correcto el login
-                    boolean esCorrecto = dbUsuarios.esLoginCorrecto(email, password);
-                    Log.d("LOG",password);
+                    // Se realiza la identificacion
+                    Data data = new Data.Builder()
+                            .putString("email", email)
+                            .putString("parametro", "identificacion")
+                            .putString("password", password).build();
 
-                    // Si el login es correcto se realiza el login
-                    if (esCorrecto) {
-                        // Paso el email
-                        i.putExtra("email", email);
-                        //i.putExtra("password", password);
-                        startActivity(i);
-                        // Termino esta actividad
-                        finish();
-                    }
-                    // Si el login no es correcto se muestra un mensaje
-                    else {
-                        Toast.makeText(Login.this, getString(R.string.loginFallido), Toast.LENGTH_LONG).show();
-                    }
+                    OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(DbUsuarios.class)
+                            .setInputData(data).build();
+                    WorkManager.getInstance(Login.this).enqueue(otwr);
+                    WorkManager.getInstance(Login.this).getWorkInfoByIdLiveData(otwr.getId()).observe(Login.this, new Observer<WorkInfo>() {
+                        @Override
+                        public void onChanged(@Nullable WorkInfo workInfo) {
+                            if (workInfo != null && workInfo.getState().isFinished()) {
+                                String resultado = workInfo.getOutputData().getString("result");
+                                // Si el php devuelve que se ha identificado CORRECTAMENTE
+                                if (resultado.equals("Bien")) {
+                                    // Paso el email
+                                    i.putExtra("email", email);
+                                    //i.putExtra("password", password);
+                                    startActivity(i);
+                                    // Termino esta actividad
+                                    finish();
+                                }
+                                // Si el php devuelve que NO COINCIDEN usuario y contrasena se muestra un mensaje
+                                else {
+                                    Toast.makeText(Login.this, getString(R.string.loginFallido), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        }
+                    });
                 }
             }
         });

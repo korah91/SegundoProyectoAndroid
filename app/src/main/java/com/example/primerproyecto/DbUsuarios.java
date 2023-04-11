@@ -3,6 +3,7 @@ package com.example.primerproyecto;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 
 import androidx.annotation.NonNull;
@@ -26,18 +27,20 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class DbUsuarios extends Worker{
+public class DbUsuarios extends Worker {
 
     // Dependiendo del parametro se ejecuta una funcionalidad de las 3 disponibles en usuarios.php
     String direccion = "http://ec2-54-93-62-124.eu-central-1.compute.amazonaws.com/jgarcia424/WEB/usuarios.php";
+
     public DbUsuarios(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
+
     @NonNull
     @Override
     public Result doWork() {
 
-        // Recojo los datos
+        // Recojo los datos. Siempre se llama a este metodo con un parametro que indica que funcion se va a realizar
         String email = getInputData().getString("email");
         String parametro = getInputData().getString("parametro");
         String password = getInputData().getString("password");
@@ -49,48 +52,52 @@ public class DbUsuarios extends Worker{
         try {
             URL destino = new URL(direccion);
             urlConnection = (HttpURLConnection) destino.openConnection();
-            urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);
+            urlConnection.setConnectTimeout(5000);
 
-            //Rellenamos los parametros
-            String parametros = "email="+email+"&parametro="+parametro+"&password="+password;
+
+            // Se envian los parametros
+            String parametros = "email=" + email + "&parametro=" + parametro + "&password=" + password;
+
+            Log.d("conexion", "Parametros: " + parametros);
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            //Enviar los parametros al php
             PrintWriter out = new PrintWriter(urlConnection.getOutputStream());
             out.print(parametros);
-            //Agregar esta línea para asegurarse de que los datos se envíen correctamente
             out.flush();
 
+            // Se obtiene la respuesta
             int status = urlConnection.getResponseCode();
-            Log.d("Prueba_Select", "Status --> " + status);
+            Log.d("conexion", "Codigo Respuesta " + status);
+            Log.d("conexion", "Respuesta:" + urlConnection.getResponseMessage());
 
-            //Si la respuesta es "200 OK" Entonces se realiza la recogida de datos
-            if(status == 200){
+
+            // En caso de obtener 200
+            if (status == 200) {
                 BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader (new InputStreamReader(inputStream, "UTF-8"));
-                String line, result="";
-                while ((line = bufferedReader.readLine()) != null){
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                String line, result = "";
+                while ((line = bufferedReader.readLine()) != null) {
                     result += line;
                 }
-                Log.d("Prueba_Select", "resultado --> " + result);
                 inputStream.close();
 
                 Data data = new Data.Builder()
-                        .putStringArray("array",array)
+                        .putString("result", result)
                         .build();
+                // Se devuelve la respuesta
                 return Result.success(data);
             }
-        }
-        catch (Exception e){
-            Log.d("DAS","Error: " + e);
+        } catch (Exception e) {
+            Log.d("conexion", "Error: " + e);
         }
         return Result.failure();
     }
+}
 
+    /*
     // Inserta un nuevo usuario en la DB
     public void insertarUsuario(String pEmail, String pPassword)  {
         try {
@@ -305,4 +312,4 @@ public class DbUsuarios extends Worker{
         }
         return yaExiste;
     }
-}
+}*/
