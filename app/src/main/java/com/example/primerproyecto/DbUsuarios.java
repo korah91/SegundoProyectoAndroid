@@ -36,11 +36,15 @@ public class DbUsuarios extends Worker{
     @NonNull
     @Override
     public Result doWork() {
-        //Datos enviados desde InicioSesionActivity
-        String username = getInputData().getString("nombre");
 
-        //Se conecta con el servidor
+        // Recojo los datos
+        String email = getInputData().getString("email");
+        String parametro = getInputData().getString("parametro");
+        String password = getInputData().getString("password");
+
+
         String direccion = "http://ec2-54-93-62-124.eu-central-1.compute.amazonaws.com/jgarcia424/WEB/usuarios.php";
+        // Conexion con el servidor
         HttpURLConnection urlConnection = null;
         try {
             URL destino = new URL(direccion);
@@ -49,7 +53,7 @@ public class DbUsuarios extends Worker{
             urlConnection.setReadTimeout(5000);
 
             //Rellenamos los parametros
-            String parametros = "nombre="+username;
+            String parametros = "email="+email+"&parametro="+parametro+"&password="+password;
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
@@ -74,16 +78,6 @@ public class DbUsuarios extends Worker{
                 }
                 Log.d("Prueba_Select", "resultado --> " + result);
                 inputStream.close();
-
-                //Se parsean los datos como JSON
-                JSONArray jsonArray = new JSONArray(result);
-                ArrayList<String[]> lista = new ArrayList<>();
-                for(int i = 0; i < jsonArray.length(); i++){
-                    String[] datos = {jsonArray.getJSONObject(i).getString("nombre"), jsonArray.getJSONObject(i).getString("password")};
-                    lista.add(datos);
-                }
-                Log.d("Select_Prueba", "Usuario --> " + lista.get(0)[0]);
-                String[] array = {lista.get(0)[0], lista.get(0)[1]}; //Nombre || Password
 
                 Data data = new Data.Builder()
                         .putStringArray("array",array)
