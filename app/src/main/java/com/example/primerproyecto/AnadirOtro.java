@@ -34,6 +34,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +51,7 @@ public class AnadirOtro extends AppCompatActivity {
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     String currentPhotoPath;
+    StorageReference storageReference;
 
     Button btn_ok, btn_cancel;
     ImageButton btn_imagen, btn_camara;
@@ -167,33 +173,13 @@ public class AnadirOtro extends AppCompatActivity {
         });
 
 
-        /*
-        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            Bitmap bitmap;
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == Activity.RESULT_OK){
-                    Intent data = result.getData();
-                    Uri uri = data.getData();
-
-                    // Convertimos a BitMap
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        // Cambiamos la imagen mostrada
-                        iv_imagen.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        */
+        // Inicializamos Firebase
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         // Cuando se pulsa el botón de la camara se abre la camara para capturar el logo
         btn_camara.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 askCameraPermissions();
             }
         });
@@ -210,6 +196,9 @@ public class AnadirOtro extends AppCompatActivity {
         finish();
     }
 
+
+    // Referencia del Código: "SmallAcademy" de Youtube.
+    // https://www.youtube.com/watch?v=dKX2V992pWI&list=PLlGT4GXi8_8eopz0Gjkh40GG6O5KhL1V1&index=4
     private void askCameraPermissions(){
         // Si no hay permisos de CAMARA y ALMACENAMIENTO, se piden
         if(ContextCompat.checkSelfPermission(AnadirOtro.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
@@ -240,17 +229,49 @@ public class AnadirOtro extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK){
                 File f = new File(currentPhotoPath);
-                iv_imagen.setImageURI(Uri.fromFile(f));
+                //iv_imagen.setImageURI(Uri.fromFile(f));
                 Log.d("imagen", "URL Absoluta de la imagen: " + Uri.fromFile(f));
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                // contentUri contiene la direccion en el movil de la foto
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 this.sendBroadcast(mediaScanIntent);
 
+                uploadImageToFirebase(f.getName(), contentUri);
             }
         }
     }
+
+    // Sube la imagen a Firebase
+    private void uploadImageToFirebase(String name, Uri contentUri) {
+        // Crea el directorio
+        StorageReference image = storageReference.child("images/" + name);
+        // El onSuccessListener se activa cuando se sube la imagen satisfactoriamente
+        image.putFile(contentUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Obtengo el url de descarga de la imagen
+                image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Log.d("firebase", "onSuccess: Uploaded IMG Url: " + uri.toString());
+                        // Cargo la imagen en el imageView con Glide
+                        Glide.with(AnadirOtro.this).load(uri).into(iv_imagen);
+
+                    }
+                });
+                Toast.makeText(AnadirOtro.this, "Firebase upload SUCCEED", Toast.LENGTH_SHORT).show();
+            }
+        // El onFailureListener se activa cuando falla
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(AnadirOtro.this, "Firebase upload failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private File createImageFile() throws IOException {
         // Se crea la imagen con un TimeStamp
