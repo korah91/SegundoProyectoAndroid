@@ -148,6 +148,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageButton
+                android:id="@+id/btn_camara"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_imagen"
+                app:layout_constraintEnd_toStartOf="@+id/iv_imagen"
+                app:layout_constraintStart_toEndOf="@+id/et_nombreUniversidad"
+                app:layout_constraintTop_toTopOf="@+id/iv_imagen"
+                app:srcCompat="@drawable/camara" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

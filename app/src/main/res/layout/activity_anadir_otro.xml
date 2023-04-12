@@ -133,6 +133,17 @@
                 app:layout_constraintTop_toTopOf="@+id/et_urlUniversidad"
                 app:srcCompat="@drawable/internetlogo" />
 
+            <ImageButton
+                android:id="@+id/btn_camara"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_imagen"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iv_imagen"
+                app:layout_constraintTop_toTopOf="@+id/iv_imagen"
+                app:srcCompat="@drawable/camara" />
+
             <ImageView
                 android:id="@+id/iv_imagen"
                 android:layout_width="181dp"
