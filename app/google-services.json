@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "513470348502",
+    "project_id": "proyectocamara-d376a",
+    "storage_bucket": "proyectocamara-d376a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513470348502:android:3a6de905ae98eb1b9bdd77",
+        "android_client_info": {
+          "package_name": "com.example.primerproyecto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513470348502-6vdtpckbint4mgh5c7m8bc54q2ptke6r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPn0l_bdM3lecCjtmZ6y-DrEsGtNwMykM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513470348502-6vdtpckbint4mgh5c7m8bc54q2ptke6r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
