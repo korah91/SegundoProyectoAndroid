@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +74,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         // Utilizo la libreria Glide para coger imagenes de internet en una sola linea
         Glide.with(context).load(listaUniversidades.get(position).getUrl()).into(viewHolder.iv_imagen);
+        Log.d("firebase", "Se ha cargado la url "+listaUniversidades.get(position).getUrl());
 
         // Se ejecuta cuando se da click a un elemento
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {

@@ -62,6 +62,9 @@ public class AnadirOtro extends AppCompatActivity {
     ImageView iv_imagen;
     int id;
 
+    // Si tiene una imagen de Firebase se utiliza esa imagen y no la url de la universidad
+    boolean imagenDeFirebase = false;
+    String urlFirebase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +131,18 @@ public class AnadirOtro extends AppCompatActivity {
                 if(et_nombreUniversidad.getText().toString().trim().length() > 0){
                     String nombre = et_nombreUniversidad.getText().toString();
                     int valoracion = Math.round(rt_valoracionUniversidad.getRating());
-                    String url = et_urlUniversidad.getText().toString();
+
+                    String url;
+                    // Si no se utiliza una imagen de firebase se guarda el url escrito en el EditText
+                    if (!imagenDeFirebase){
+                        url = et_urlUniversidad.getText().toString();
+                    }
+                    // Si se ha hecho una foto con la camara, se ha guardado en Firebase, por lo que se guarda la url de firebase como url de la imagen
+                    else{
+                        url = urlFirebase;
+                        Log.d("firebase", "Se utiliza la imagen de "+url);
+                    }
+
 
                     if (id >= 0){
                         // Actualizo la universidad
@@ -235,6 +249,10 @@ public class AnadirOtro extends AppCompatActivity {
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 // contentUri contiene la direccion en el movil de la foto
                 Uri contentUri = Uri.fromFile(f);
+
+                // Guardamos la url en la variable global para guardarla en el objeto como url de la imagen
+                urlFirebase = contentUri.toString();
+
                 mediaScanIntent.setData(contentUri);
                 this.sendBroadcast(mediaScanIntent);
 
@@ -259,6 +277,8 @@ public class AnadirOtro extends AppCompatActivity {
                         // Cargo la imagen en el imageView con Glide
                         Glide.with(AnadirOtro.this).load(uri).into(iv_imagen);
 
+                        // Se pone el booleano a true para que se guarde la url de firebase
+                        imagenDeFirebase = true;
                     }
                 });
                 Toast.makeText(AnadirOtro.this, "Firebase upload SUCCEED", Toast.LENGTH_SHORT).show();
