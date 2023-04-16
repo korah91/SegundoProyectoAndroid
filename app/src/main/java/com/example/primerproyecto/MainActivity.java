@@ -31,6 +31,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -124,6 +128,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Cuando entro en la actividad principal se crea una notificacion para recordar al usuario que puntue
         notificacion();
+
+
+        // Conocer el token FCM del dispositivo
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            return;
+                        }
+                        String token = task.getResult();
+                    }
+                });
+
     }
 
 

@@ -16,29 +16,33 @@ if (mysqli_connect_errno()) {
 $parametro = $_POST["parametro"];
 
 
-
 # Identificacion de usuarios
 if ($parametro == "identificacion") {
+	
 	$email = $_POST["email"];
 	$password = $_POST["password"];
 	
-	$consulta = "SELECT email FROM t_usuarios WHERE email='$email' AND password='$password'";
-	# Ejecutar la sentencia SQL
-	$resultado = mysqli_query($con, $consulta);
-	# Comprobar si se ha ejecutado correctamente
-	if (!$resultado) {
-		echo 'Ha ocurrido algún error: ' . mysqli_error($con);
-	}
 	
-	# Compruebo el numero de coincidencias
-	$anything_found = mysqli_num_rows($resultado);
-	# Si aparece la combinacion de email y password dadas se identifica correctamente
-	if($anything_found > 0) {
-		echo "Bien";
-	}
-	# Si no, no se identifica
-	else{
+	# Primero se comprueba que existe el usuario para poder comprobar su clave cifrada con la que manda la aplicacion
+		#$consulta = $con->prepare("SELECT * FROM t_usuarios WHERE email=:email");
+		#$consulta->bindParam("email", $email, PDO::PARAM_STR);
+	
+	$resultado = $con->query("SELECT * FROM t_usuarios WHERE email='$email'");
+	$fila = mysqli_fetch_assoc($resultado);
+	$passwordHash = $fila['password'];
+
+	# Comprobar si el email existe. No se informa al usuario de si lo que se ha introducido mal es el email o la contrasena por seguridad
+	if (!$resultado) {
 		echo "Mal";
+	} else { 
+		# Si la contraseña coincide con la contrasena guardada se devuelve Bien
+		if (password_verify($password, $passwordHash)) {
+			echo "Bien";
+		} 
+		# Si la contrasena no coincide, se devuelve Mal.
+		else {
+			echo "Mal";
+		}
 	}
 }
 
@@ -46,7 +50,7 @@ if ($parametro == "identificacion") {
 # Identificacion de usuarios
 if ($parametro == "registro") {
 	$email = $_POST["email"];
-	$password = $_POST["password"];
+	$password = password_hash($_POST["password"], PASSWORD_DEFAULT);
 	
 	$consulta = "INSERT INTO t_usuarios VALUES ('$email', '$password')";
 
