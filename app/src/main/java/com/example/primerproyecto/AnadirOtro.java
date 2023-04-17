@@ -56,6 +56,7 @@ import java.util.List;
 
 public class AnadirOtro extends AppCompatActivity {
 
+    static String token;
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     String currentPhotoPath;
@@ -289,7 +290,6 @@ public class AnadirOtro extends AppCompatActivity {
                         imagenDeFirebase = true;
 
                         // Se obtiene el token del dispositivo
-                        String token;
 
                         FirebaseMessaging.getInstance().getToken()
                                 .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -305,29 +305,31 @@ public class AnadirOtro extends AppCompatActivity {
 
                                         // Log and toast
                                         Log.d("fcm", "El token del dispositivo: " + token);
+                                        // Despues de obtener el token se manda un POST a un PHP con el token para que el PHP se lo mande a Firebase y finalmente se mande una notificacion al dispositivo
+                                        // para agradecer al usuario que haya fotografiado el logo de la universidad
+
+                                        // Se realiza la identificacion
+                                        Data data = new Data.Builder()
+                                                .putString("token", token).build();
+                                        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(NotificacionFirebase.class)
+                                                .setInputData(data).build();
+                                        WorkManager.getInstance(AnadirOtro.this).enqueue(otwr);
+                                        WorkManager.getInstance(AnadirOtro.this).getWorkInfoByIdLiveData(otwr.getId()).observe(AnadirOtro.this, new Observer<WorkInfo>() {
+                                            @Override
+                                            public void onChanged(@Nullable WorkInfo workInfo) {
+                                                if (workInfo != null && workInfo.getState().isFinished()) {
+                                                    String resultado = workInfo.getOutputData().getString("result");
+                                                    // Si el php devuelve que se ha identificado CORRECTAMENTE
+                                                    Log.d("fcm", "notificacionFirebase.php devuelve "+resultado);
+
+                                                }
+                                            }
+                                        });
+
                                     }
                                 });
 
-                        // Despues de obtener el token se manda un POST a un PHP con el token para que el PHP se lo mande a Firebase y finalmente se mande una notificacion al dispositivo
-                        // para agradecer al usuario que haya fotografiado el logo de la universidad
-                        Log.d("fcm", "el token que envia anadirOtro es "+token);
-                        // Se realiza la identificacion
-                        Data data = new Data.Builder()
-                                .putString("token", token).build();
-                        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(NotificacionFirebase.class)
-                                .setInputData(data).build();
-                        WorkManager.getInstance(AnadirOtro.this).enqueue(otwr);
-                        WorkManager.getInstance(AnadirOtro.this).getWorkInfoByIdLiveData(otwr.getId()).observe(AnadirOtro.this, new Observer<WorkInfo>() {
-                            @Override
-                            public void onChanged(@Nullable WorkInfo workInfo) {
-                                if (workInfo != null && workInfo.getState().isFinished()) {
-                                    String resultado = workInfo.getOutputData().getString("result");
-                                    // Si el php devuelve que se ha identificado CORRECTAMENTE
-                                    Log.d("fcm", "notificacionFirebase.php devuelve "+resultado);
 
-                                }
-                            }
-                        });
 
 
 
