@@ -1,5 +1,9 @@
 package com.example.primerproyecto;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -9,9 +13,8 @@ public class ServicioFirebase extends FirebaseMessagingService {
 
     // Qué hacer cada vez que se genere un token para el dispositivo
     @Override
-    public void onNewToken(String s) {
-        super.onNewToken(s);
-
+    public void onNewToken(@NonNull String token) {
+        Log.d("fcm", "Refreshed token: " + token);
     }
     // Si la aplicación está en background, no se ejecuta este método
     // Este metodo solo ejecuta cuando esta en Primer Plano y no muestra notificacion

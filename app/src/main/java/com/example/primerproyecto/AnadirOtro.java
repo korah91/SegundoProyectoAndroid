@@ -34,8 +34,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -279,6 +282,27 @@ public class AnadirOtro extends AppCompatActivity {
 
                         // Se pone el booleano a true para que se guarde la url de firebase
                         imagenDeFirebase = true;
+
+                        // Se obtiene el token del dispositivo
+                        FirebaseMessaging.getInstance().getToken()
+                                .addOnCompleteListener(new OnCompleteListener<String>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<String> task) {
+                                        if (!task.isSuccessful()) {
+                                            Log.w("fcm", "Fetching FCM registration token failed", task.getException());
+                                            return;
+                                        }
+
+                                        // Get new FCM registration token
+                                        String token = task.getResult();
+
+                                        // Log and toast
+                                        Log.d("fcm", "El token del dispositivo: " + token);
+                                    }
+                                });
+
+                        // Despues de obtener el token se manda un POST a un PHP con el token para que el PHP se lo mande
+
                     }
                 });
                 Toast.makeText(AnadirOtro.this, "Firebase upload SUCCEED", Toast.LENGTH_SHORT).show();
