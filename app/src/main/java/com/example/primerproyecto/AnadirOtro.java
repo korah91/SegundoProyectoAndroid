@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -130,7 +131,14 @@ public class AnadirOtro extends AppCompatActivity {
             tv_idUniversidad.setText("No creado");
 
         }
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)!=
+                    PackageManager.PERMISSION_GRANTED) {
+        //PEDIR EL PERMISO
+                ActivityCompat.requestPermissions(this, new
+                        String[]{Manifest.permission.POST_NOTIFICATIONS}, 11);
+            }
+        }
 
         // Cuando se pulsa el boton confirmar
         btn_ok.setOnClickListener(new View.OnClickListener() {
@@ -325,16 +333,8 @@ public class AnadirOtro extends AppCompatActivity {
                                                 }
                                             }
                                         });
-
                                     }
                                 });
-
-
-
-
-
-
-
                     }
                 });
                 Toast.makeText(AnadirOtro.this, "Firebase upload SUCCEED", Toast.LENGTH_SHORT).show();
