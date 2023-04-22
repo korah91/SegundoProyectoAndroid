@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -25,7 +26,12 @@ public class ServicioFirebase extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         Log.d("fcm", "Refreshed token: " + token);
+
+        // Suscribo el dispositivo al topico ALERTS para poder enviar una notificacion a todos los dispositivos
+        // cuando se navega al link del notificacionFirebase.php
+        FirebaseMessaging.getInstance().subscribeToTopic("ALERTS");
     }
+
     // Si la aplicación está en background, no se ejecuta este método
     // Este metodo solo ejecuta cuando esta en Primer Plano y no muestra notificacion
     public void onMessageReceived(RemoteMessage remoteMessage) {

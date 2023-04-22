@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
 
         // Cuando entro en la actividad principal se crea una notificacion para recordar al usuario que puntue
-        notificacion();
+        //notificacion();
 
 
         // Conocer el token FCM del dispositivo
@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Crea la notificacion
+    // Crea la notificacion de la primera entrega del trabajo. No tiene nada que ver con Firebase
     public void notificacion(){
 
         // Pido permisos, se ejecuta solo cuando la version de API es 33
@@ -288,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
             elManager.notify(1, elBuilder.build());
         }
     }
+
     // Cuando se pulsa el boton "back" se vuelve al login y no se cierra la aplicacion
     @Override
     public void onBackPressed(){

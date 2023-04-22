@@ -29,7 +29,6 @@ public class NotificacionFirebase extends Worker {
         // Recojo el token
         String token = getInputData().getString("token");
 
-
         String direccion = "http://ec2-54-93-62-124.eu-central-1.compute.amazonaws.com/jgarcia424/WEB/notificacionFirebase.php";
         // Conexion con el servidor
         HttpURLConnection urlConnection = null;

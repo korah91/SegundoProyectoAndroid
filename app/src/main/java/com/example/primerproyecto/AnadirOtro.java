@@ -48,6 +48,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -293,6 +294,7 @@ public class AnadirOtro extends AppCompatActivity {
                         Log.d("firebase", "onSuccess: Uploaded IMG Url: " + uri.toString());
                         // Cargo la imagen en el imageView con Glide
                         Glide.with(AnadirOtro.this).load(uri).into(iv_imagen);
+                        //Picasso.get().load(uri).into(iv_imagen);
 
                         // Se pone el booleano a true para que se guarde la url de firebase
                         imagenDeFirebase = true;
@@ -381,7 +383,7 @@ public class AnadirOtro extends AppCompatActivity {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
+                        "com.example.android.UniStars.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
